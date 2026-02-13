@@ -232,7 +232,7 @@ const azureAdStrategyBuilderFactory =
         // This avoids session persistence issues with cross-site POST callbacks
         useCookieInsteadOfSession: true,
         cookieEncryptionKeys: [{ key: encryptionKey, iv: encryptionIv }],
-        cookieSameSite: false // false = SameSite=None (required for cross-site POST)
+        cookieSameSite: true // Sets SameSite=None; Secure (required for cross-site POST)
       },
       // Dunno why TS isn't picking up on the types automatically
       async (
