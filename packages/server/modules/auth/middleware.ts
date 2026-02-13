@@ -4,6 +4,7 @@ import ConnectRedis from 'connect-redis'
 import { createRedisClient } from '@/modules/shared/redis/redis'
 import {
   isSSLServer,
+  isAzureAdEnabled,
   getRedisUrl,
   getFrontendOrigin,
   getSessionSecret
@@ -27,7 +28,11 @@ export const sessionMiddlewareFactory = (): RequestHandler => {
     resave: false,
     cookie: {
       maxAge: 3 * TIME_MS.minute,
-      secure: isSSLServer()
+      secure: isSSLServer(),
+      // Azure AD uses form_post (cross-site POST) for its callback, which requires
+      // sameSite: 'none' so the session cookie is sent. Other strategies use GET
+      // callbacks where 'lax' is sufficient. Only weaken to 'none' when needed.
+      sameSite: isAzureAdEnabled() && isSSLServer() ? 'none' : 'lax'
     }
   })
 
@@ -57,7 +62,15 @@ export const moveAuthParamsToSessionMiddlewareFactory =
       req.session.newsletterConsent = true
     }
 
-    next()
+    // Explicitly save session before redirect to external OAuth provider
+    // This ensures the challenge is persisted to Redis before the browser redirects
+    req.session.save((err) => {
+      if (err) {
+        req.log?.error({ err }, 'Failed to save session before OAuth redirect')
+        return res.status(500).send('Failed to initialize authentication session')
+      }
+      next()
+    })
   }
 
 /**

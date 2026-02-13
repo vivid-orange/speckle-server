@@ -144,6 +144,7 @@ export type FindOrCreateValidatedUser = (params: {
     name: string
     role?: ServerRoles
     bio?: string
+    avatar?: string
     verified?: boolean
     /**
      * Only OK to leave unset in fake/simulated scenarios such as tests

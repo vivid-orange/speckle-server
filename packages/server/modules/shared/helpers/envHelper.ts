@@ -168,6 +168,10 @@ export function getGithubClientSecret() {
   return getStringFromEnv('GITHUB_CLIENT_SECRET')
 }
 
+export function isAzureAdEnabled() {
+  return getBooleanFromEnv('STRATEGY_AZURE_AD')
+}
+
 export function getAzureAdIdentityMetadata() {
   return getStringFromEnv('AZURE_AD_IDENTITY_METADATA')
 }

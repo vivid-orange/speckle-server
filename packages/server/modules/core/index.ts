@@ -46,8 +46,15 @@ import { getServerTotalModelCountFactory } from '@/modules/core/services/branch/
 import { getServerTotalVersionCountFactory } from '@/modules/core/services/commit/retrieval'
 import { bullMonitoringRouterFactory } from '@/modules/core/rest/monitoring'
 import { projectListenersFactory } from '@/modules/core/events/projectListeners'
+import {
+  autoCollaboratorListenersFactory,
+  grantContributorToAllProjectsFactory,
+  grantAllUsersContributorFactory
+} from '@/modules/core/events/autoCollaborator'
+import { getFeatureFlags } from '@/modules/shared/helpers/envHelper'
 
 let stopTestSubs: (() => void) | undefined = undefined
+let stopAutoCollaborator: (() => void) | undefined = undefined
 
 const coreModule: SpeckleModule<{
   hooks: HooksConfig
@@ -127,6 +134,15 @@ const coreModule: SpeckleModule<{
         eventBus: getEventBus(),
         logger: coreLogger
       })()
+
+      if (getFeatureFlags().FF_AUTO_COLLABORATOR_ENABLED) {
+        stopAutoCollaborator = autoCollaboratorListenersFactory({
+          eventBus: getEventBus(),
+          grantContributorToAllProjects: grantContributorToAllProjectsFactory({ db }),
+          grantAllUsersContributor: grantAllUsersContributorFactory({ db }),
+          logger: coreLogger
+        })()
+      }
     }
   },
   async finalize({ app }) {
@@ -149,6 +165,7 @@ const coreModule: SpeckleModule<{
     await shutdownResultListener()
     await getGenericRedis().quit()
     stopTestSubs?.()
+    stopAutoCollaborator?.()
   }
 }
 

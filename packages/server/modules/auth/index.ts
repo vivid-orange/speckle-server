@@ -39,7 +39,8 @@ import {
   legacyGetUserByEmailFactory,
   legacyGetUserFactory,
   storeUserAclFactory,
-  storeUserFactory
+  storeUserFactory,
+  updateUserFactory
 } from '@/modules/core/repositories/users'
 import {
   createUserFactory,
@@ -150,7 +151,10 @@ const setupStrategies = setupStrategiesFactory({
   githubStrategyBuilder: githubStrategyBuilderFactory({
     ...commonBuilderDeps
   }),
-  azureAdStrategyBuilder: azureAdStrategyBuilderFactory({ ...commonBuilderDeps }),
+  azureAdStrategyBuilder: azureAdStrategyBuilderFactory({
+    ...commonBuilderDeps,
+    updateUser: updateUserFactory({ db })
+  }),
   googleStrategyBuilder: googleStrategyBuilderFactory({ ...commonBuilderDeps }),
   localStrategyBuilder: localStrategyBuilderFactory({
     ...commonBuilderDeps,
