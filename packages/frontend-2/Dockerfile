@@ -57,6 +57,7 @@ ENV BUILD_SOURCEMAPS=${BUILD_SOURCEMAPS}
 # for better sourcemaps (the app still gets minified at the end)
 ENV SKIP_LIBRARY_MINIFICATION=true
 ARG SPECKLE_SERVER_VERSION=custom
+ENV SPECKLE_SERVER_VERSION=${SPECKLE_SERVER_VERSION}
 # for better hydration mismatch errors in prod (larger bundle size tho)
 ENV HYDRATION_MISMATCH_REPORTING=false
 # hadolint ignore=DL3059

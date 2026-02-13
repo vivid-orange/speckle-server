@@ -94,9 +94,42 @@ http {
   real_ip_header CF-Connecting-IP;
   #real_ip_header X-Forwarded-For;
 
+  # HTTP server - ACME challenge and redirect to HTTPS
   server {
     listen 8080;
-    client_max_body_size 100m;
+    server_name ${DOMAIN};
+
+    location /.well-known/acme-challenge/ {
+      root /var/www/certbot;
+    }
+
+    location / {
+      return 301 https://$host$request_uri;
+    }
+  }
+
+  # Optional alias domain redirect (generated only when DOMAIN_ALIAS is set)
+  include /etc/nginx/nginx-alias.conf;
+
+  # HTTPS server - main traffic
+  server {
+    listen 8443 ssl;
+    http2 on;
+    server_name ${DOMAIN};
+    client_max_body_size ${FILE_SIZE_LIMIT_MB}m;
+
+    ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_tickets off;
+
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
 
     location / {
       resolver 127.0.0.11 valid=30s;
@@ -109,6 +142,8 @@ http {
       proxy_http_version 1.1;
       proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection "upgrade";
     }
@@ -124,6 +159,8 @@ http {
       proxy_http_version 1.1;
       proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection "upgrade";
     }
