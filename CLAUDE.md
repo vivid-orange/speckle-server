@@ -199,20 +199,11 @@ yarn workspace @speckle/ui-components test
 docker compose -f docker-compose-deps.yml up -d
 
 # Build images and start services (all build steps happen inside Docker)
-docker compose -f docker-compose-speckle.yml up -d --build
+# IMPORTANT: Always set SPECKLE_SERVER_VERSION or the UI will show "custom"
+SPECKLE_SERVER_VERSION=2.29.0 docker compose -f docker-compose-speckle.yml up -d --build
 ```
 
-### Build with Dynamic Version
-To display the correct version in the UI (instead of "custom"), fetch the latest release version from GitHub:
-```bash
-SPECKLE_SERVER_VERSION=$(curl -s https://api.github.com/repos/specklesystems/speckle-server/releases/latest | grep tag_name | cut -d'"' -f4) \
-  docker compose -f docker-compose-speckle.yml up -d --build
-```
-
-Or add an alias to `~/.bashrc` or `~/.zshrc`:
-```bash
-alias speckle-build='SPECKLE_SERVER_VERSION=$(curl -s https://api.github.com/repos/specklesystems/speckle-server/releases/latest | grep tag_name | cut -d"\"" -f4) docker compose -f docker-compose-speckle.yml up -d --build'
-```
+Check the latest version at https://github.com/specklesystems/speckle-server/releases/latest
 
 ### Upgrade Procedure
 
@@ -240,10 +231,10 @@ docker compose -f docker-compose-speckle.yml exec speckle-server yarn cli db mig
 
 **Step 4: Rebuild and deploy**
 ```bash
-SPECKLE_SERVER_VERSION=X.Y.Z docker compose -f docker-compose-speckle.yml up -d --build
+SPECKLE_SERVER_VERSION=2.29.0 docker compose -f docker-compose-speckle.yml up -d --build
 ```
 
-Replace `X.Y.Z` with the target version (e.g., `2.28.0`). The `--build` flag is required to rebuild images with the new code.
+Replace the version with the target version from https://github.com/specklesystems/speckle-server/releases/latest. The `--build` flag is required to rebuild images with the new code.
 
 **Step 5: Verify the upgrade**
 1. Check version in UI at https://speckle.whitbywood.com
