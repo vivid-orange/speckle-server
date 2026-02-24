@@ -194,7 +194,9 @@ export const createKnexConfig = ({
       min: 0,
       max: maxConnections,
       acquireTimeoutMillis: connectionAcquireTimeoutMillis, // If the maximum number of connections is reached, it wait for 16 seconds trying to acquire an existing connection before throwing a timeout error.
-      createTimeoutMillis: connectionCreateTimeoutMillis // If no existing connection is available and the maximum number of connections is not yet reached, the pool will try to create a new connection for 5 seconds before throwing a timeout error.
+      createTimeoutMillis: connectionCreateTimeoutMillis, // If no existing connection is available and the maximum number of connections is not yet reached, the pool will try to create a new connection for 5 seconds before throwing a timeout error.
+      idleTimeoutMillis: 30000, // Destroy connections idle for more than 30 seconds, preventing stale/leaked connections from occupying the pool.
+      reapIntervalMillis: 1000 // Check for idle connections every 1 second.
       // createRetryIntervalMillis: 200, // Irrelevant & ignored because propagateCreateError is true.
       // propagateCreateError: true // The propagateCreateError is set to true by default in Knex and throws a TimeoutError if the first create connection to the database fails. Knex recommends that this value is NOT set to false, despite what 'helpful' people on Stackoverflow tell you: https://github.com/knex/knex/issues/3455#issuecomment-535554401
     }
