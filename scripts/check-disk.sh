@@ -76,6 +76,7 @@ Sent by check-disk.sh on ${HOST_NAME}"
   CURL_EXIT=0
   echo "$MESSAGE" | curl -s --url "smtp://${SMTP_HOST}:${SMTP_PORT}" \
     --ssl-reqd \
+    --login-options "AUTH=LOGIN" \
     --netrc-file "$NETRC_FILE" \
     --mail-from "${SMTP_FROM}" \
     --mail-rcpt "${RECIPIENT}" \

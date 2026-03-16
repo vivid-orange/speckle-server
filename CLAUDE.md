@@ -482,8 +482,9 @@ A weekly cron job runs as `speckle-user` to prune dangling Docker images (old bu
 
 - Sends to `t.reinhardt@whitbywood.com` via the server's SMTP config (OVH)
 - Includes filesystem and Docker disk usage in the alert
-- Output logged to `/var/log/check-disk.log`
+- Output logged to `/var/log/check-disk.log` (file must be owned by `speckle-user`)
 - Threshold can be changed by editing `THRESHOLD=80` in the script
+- Uses `--login-options "AUTH=LOGIN"` for curl SMTP — OVH advertises GSSAPI first, which fails without Kerberos
 
 ## IDE Setup (VSCode)
 
