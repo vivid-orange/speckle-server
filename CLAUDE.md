@@ -486,6 +486,31 @@ A weekly cron job runs as `speckle-user` to prune dangling Docker images (old bu
 - Threshold can be changed by editing `THRESHOLD=80` in the script
 - Uses `--login-options "AUTH=LOGIN"` for curl SMTP — OVH advertises GSSAPI first, which fails without Kerberos
 
+### Docker Log Rotation
+
+Container logs are capped by `/etc/docker/daemon.json`:
+
+```json
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "50m",
+    "max-file": "3"
+  }
+}
+```
+
+- Each container keeps at most **3 log files of 50MB each** (150MB max per container)
+- Applies only to containers created **after** the config was added — existing containers must be recreated (`docker compose ... up -d --force-recreate`)
+- If logs grow unexpectedly, check which container is the culprit:
+  ```bash
+  sudo find /var/lib/docker/containers -name "*.log" -exec ls -lhS {} + | head -5
+  ```
+- To truncate a log without restarting the container:
+  ```bash
+  sudo truncate -s 0 /var/lib/docker/containers/<container-id>/<container-id>-json.log
+  ```
+
 ## IDE Setup (VSCode)
 
 1. Open using `workspace.code-workspace` file
