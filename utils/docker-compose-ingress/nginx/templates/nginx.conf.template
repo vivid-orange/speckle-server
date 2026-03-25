@@ -148,6 +148,25 @@ http {
       proxy_set_header Connection "upgrade";
     }
 
+    # MinIO proxy for presigned file uploads (S3 bucket path)
+    # S3_PUBLIC_ENDPOINT is set to this domain so presigned URLs point here.
+    # The path is NOT rewritten — S3v4 signatures include the URI path, so
+    # any rewrite would invalidate the signature and cause a 403.
+    location /${S3_BUCKET}/ {
+      resolver 127.0.0.11 valid=30s;
+      set $upstream_minio minio;
+      client_max_body_size ${FILE_SIZE_LIMIT_MB}m;
+      proxy_pass http://$upstream_minio:9000;
+
+      proxy_buffering off;
+      proxy_request_buffering off;
+      proxy_http_version 1.1;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
     location ~* ^/(graphql|explorer|(auth/.*)|(objects/.*)|(preview/.*)|(api/.*)|(static/.*)) {
       resolver 127.0.0.11 valid=30s;
       set $upstream_speckle_server speckle-server;
