@@ -187,6 +187,8 @@ yarn workspace @speckle/ui-components test
 | Redis      | Cache/sessions | 6379                   |
 | MinIO      | S3 storage     | 9001 (UI), 9000 (API)  |
 | Maildev    | Email testing  | 1080 (UI), 1025 (SMTP) |
+| Prometheus | Metrics store  | 9090                   |
+| Grafana    | Dashboards     | 3100                   |
 
 ## Docker Deployment
 
@@ -422,6 +424,37 @@ SPECKLE_TOKEN=your-token ./scripts/bulk-add-users.sh
 ./scripts/bulk-add-collaborators-db.sh
 ```
 
+## Monitoring (Prometheus + Grafana)
+
+Prometheus scrapes the speckle-server `/metrics` endpoint every 15s. Grafana provides a pre-built "Speckle Server Overview" dashboard.
+
+```bash
+# Start monitoring
+docker compose -f docker-compose-deps.yml up -d prometheus grafana
+```
+
+**Accessing from your local machine (SSH tunnel):**
+
+Grafana and Prometheus are bound to `127.0.0.1` on the server, so you need an SSH tunnel to access them remotely:
+
+```bash
+ssh -i ~/.ssh/assets-speckle_key.pem -L 3100:localhost:3100 -L 9090:localhost:9090 speckle-user@speckle.whitbywood.com
+```
+
+Keep the terminal open, then in your browser:
+- **Grafana:** http://localhost:3100 (credentials in `.env`: `GRAFANA_ADMIN_USER` / `GRAFANA_ADMIN_PASSWORD`)
+- **Prometheus:** http://localhost:9090
+
+**Dashboard panels:** Knex connection pool (free/used/pending/remaining), connection acquisition duration, DB query errors, HTTP request rate & duration, HTTP error rate, active connections, WebSocket clients, subscription operations, Node.js heap memory, CPU usage, resident memory, preview job queue, file import job queue.
+
+**Config files:**
+- `setup/prometheus/prometheus.yml` — scrape config
+- `setup/grafana/provisioning/datasources/prometheus.yml` — auto-provisioned datasource
+- `setup/grafana/provisioning/dashboards/dashboards.yml` — dashboard provisioning
+- `setup/grafana/dashboards/speckle-overview.json` — pre-built dashboard
+
+Data is persisted in `prometheus-data` and `grafana-data` Docker volumes (30-day retention for Prometheus).
+
 ## Scheduled Maintenance
 
 ### Docker Image Cleanup (cron)
@@ -449,8 +482,34 @@ A weekly cron job runs as `speckle-user` to prune dangling Docker images (old bu
 
 - Sends to `t.reinhardt@whitbywood.com` via the server's SMTP config (OVH)
 - Includes filesystem and Docker disk usage in the alert
-- Output logged to `/var/log/check-disk.log`
+- Output logged to `/var/log/check-disk.log` (file must be owned by `speckle-user`)
 - Threshold can be changed by editing `THRESHOLD=80` in the script
+- Uses `--login-options "AUTH=LOGIN"` for curl SMTP — OVH advertises GSSAPI first, which fails without Kerberos
+
+### Docker Log Rotation
+
+Container logs are capped by `/etc/docker/daemon.json`:
+
+```json
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "50m",
+    "max-file": "3"
+  }
+}
+```
+
+- Each container keeps at most **3 log files of 50MB each** (150MB max per container)
+- Applies only to containers created **after** the config was added — existing containers must be recreated (`docker compose ... up -d --force-recreate`)
+- If logs grow unexpectedly, check which container is the culprit:
+  ```bash
+  sudo find /var/lib/docker/containers -name "*.log" -exec ls -lhS {} + | head -5
+  ```
+- To truncate a log without restarting the container:
+  ```bash
+  sudo truncate -s 0 /var/lib/docker/containers/<container-id>/<container-id>-json.log
+  ```
 
 ## IDE Setup (VSCode)
 
