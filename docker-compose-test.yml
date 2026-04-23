@@ -16,7 +16,7 @@ services:
   # It does not wait for it to actually run to completion before exiting.
   # This service ensures docker compose waits for the test to finish before exiting.
   confirm_test_finished:
-    image: busybox
+    image: busybox:1.37.0@sha256:1487d0af5f52b4ba31c7e465126ee2123fe3f2305d638e7827681e7cf6c83d5e
     command: sh -c "echo '✅ Deployment of test completed successfully!'"
     depends_on:
       test:

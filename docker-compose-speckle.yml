@@ -202,7 +202,7 @@ services:
       # - postgres
 
   certbot:
-    image: certbot/certbot:latest
+    image: certbot/certbot:v5.5.0@sha256:78a7eaa40af657301e25731297b6e73646c695370d17e9bb03189fa82966d65c
     logging: *default-logging
     volumes:
       - certbot-certs:/etc/letsencrypt
