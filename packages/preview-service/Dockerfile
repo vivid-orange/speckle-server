@@ -1,7 +1,7 @@
 ARG NODE_ENV=production
 
 # NOTE: Docker context should be set to git root directory, to include the viewer
-FROM node:18-bookworm-slim@sha256:f9ab18e354e6855ae56ef2b290dd225c1e51a564f87584b9bd21dd651838830e AS build-stage
+FROM node:22-bookworm-slim@sha256:d415caac2f1f77b98caaf9415c5f807e14bc8d7bdea62561ea2fef4fbd08a73c AS build-stage
 
 # Consume the ARG from the global scope
 ARG NODE_ENV
