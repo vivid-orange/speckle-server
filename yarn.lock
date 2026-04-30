@@ -9703,7 +9703,7 @@ __metadata:
     "@tiptap/extension-hard-break": "npm:2.10.3"
     "@tiptap/extension-history": "npm:2.10.3"
     "@tiptap/extension-italic": "npm:2.10.3"
-    "@tiptap/extension-link": "npm:2.10.3"
+    "@tiptap/extension-link": "npm:2.10.4"
     "@tiptap/extension-mention": "npm:2.10.3"
     "@tiptap/extension-paragraph": "npm:2.10.3"
     "@tiptap/extension-placeholder": "npm:2.10.3"
@@ -11781,15 +11781,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-link@npm:2.10.3":
-  version: 2.10.3
-  resolution: "@tiptap/extension-link@npm:2.10.3"
+"@tiptap/extension-link@npm:2.10.4":
+  version: 2.10.4
+  resolution: "@tiptap/extension-link@npm:2.10.4"
   dependencies:
     linkifyjs: "npm:^4.1.0"
   peerDependencies:
     "@tiptap/core": ^2.7.0
     "@tiptap/pm": ^2.7.0
-  checksum: 10/7ac1359c1241901af5868f339761907ed6bb1fb46e36d2bd8fb79227271e19e3639538971260f8927825db9a1eea038e0ad41511279a9034bf8f56c9f1918487
+  checksum: 10/6703d29ad9d451e3863cdc3142b056c328862be1aef35eb2d53d707df03d80181a348c7f99713bbabb5677537ad4c4924133fe5a909e2ac31338c2ba7792eab2
   languageName: node
   linkType: hard
 
