@@ -1,7 +1,14 @@
 #!/bin/bash
 
 # Let's Encrypt initialization script for Speckle
-# This script obtains SSL certificates from Let's Encrypt using standalone mode
+#
+# Initial acquisition uses standalone mode (port 80) because nginx cannot start
+# without an existing cert (its config references /etc/letsencrypt/live/...).
+# Once services are up, we re-issue via webroot mode so the renewal config in
+# /etc/letsencrypt/renewal/<domain>.conf is set to authenticator = webroot.
+# This is what makes the certbot container's nightly `certbot renew` loop work:
+# nginx (which holds port 80) serves the ACME challenge from /var/www/certbot,
+# instead of certbot trying to bind port 80 itself and getting a 404 from nginx.
 
 set -e
 
@@ -55,6 +62,36 @@ docker compose -f "$COMPOSE_FILE" up -d
 
 echo "### Step 5: Waiting for services to start..."
 sleep 10
+
+echo "### Step 6: Switching renewal config from standalone to webroot..."
+# Re-issue each cert via webroot so /etc/letsencrypt/renewal/<domain>.conf is
+# saved with authenticator = webroot. Without this, the certbot container's
+# nightly `certbot renew` would inherit standalone mode and fail to bind
+# port 80 (nginx already has it), so renewals would silently fail until the
+# cert expires. --force-renewal ensures the issuance actually runs even
+# though the cert from step 3 isn't due for renewal yet.
+docker compose -f "$COMPOSE_FILE" exec -T certbot certbot certonly --webroot \
+  --webroot-path /var/www/certbot \
+  --email "$EMAIL" \
+  --domain "$DOMAIN" \
+  --rsa-key-size "$RSA_KEY_SIZE" \
+  --agree-tos \
+  --non-interactive \
+  --force-renewal
+
+if [ -n "$DOMAIN_ALIAS" ]; then
+  docker compose -f "$COMPOSE_FILE" exec -T certbot certbot certonly --webroot \
+    --webroot-path /var/www/certbot \
+    --email "$EMAIL" \
+    --domain "$DOMAIN_ALIAS" \
+    --rsa-key-size "$RSA_KEY_SIZE" \
+    --agree-tos \
+    --non-interactive \
+    --force-renewal
+fi
+
+echo "### Step 7: Reloading nginx to pick up the webroot-issued certificates..."
+docker compose -f "$COMPOSE_FILE" exec speckle-ingress nginx -s reload
 
 echo "### Done! SSL certificate obtained successfully."
 echo ""

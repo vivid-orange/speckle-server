@@ -320,10 +320,27 @@ chmod +x utils/docker-compose-ingress/init-letsencrypt.sh
 
 **Certificate Renewal:**
 - Certbot container checks for renewal every 12 hours automatically
+- Renewals use **webroot** authentication: nginx serves the ACME challenge from `/var/www/certbot` (shared volume) on port 80, so certbot does not need to bind port 80 itself. The renewal config in `/etc/letsencrypt/renewal/<domain>.conf` must have `authenticator = webroot` — this is set by `init-letsencrypt.sh` step 6
 - After renewal, reload nginx to use the new certificate:
   ```bash
   docker compose -f docker-compose-speckle.yml exec speckle-ingress nginx -s reload
   ```
+
+**Troubleshooting renewal failures:**
+
+If `docker compose -f docker-compose-speckle.yml logs certbot` shows `404` errors fetching `/.well-known/acme-challenge/...`, the renewal config is likely set to standalone instead of webroot (certbot tries to bind port 80, nginx already has it, so Let's Encrypt hits nginx's 404). Verify:
+```bash
+docker compose -f docker-compose-speckle.yml exec certbot \
+  grep authenticator /etc/letsencrypt/renewal/*.conf
+# Should print: authenticator = webroot
+```
+Fix by re-issuing via webroot (this updates the renewal config in place):
+```bash
+docker compose -f docker-compose-speckle.yml exec certbot certbot certonly \
+  --webroot --webroot-path /var/www/certbot --non-interactive --agree-tos \
+  --email t.reinhardt@whitbywood.com -d speckle.whitbywood.com
+docker compose -f docker-compose-speckle.yml exec speckle-ingress nginx -s reload
+```
 
 **Check Certificate Status:**
 ```bash
