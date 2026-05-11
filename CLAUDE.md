@@ -503,6 +503,22 @@ A weekly cron job runs as `speckle-user` to prune dangling Docker images (old bu
 - Threshold can be changed by editing `THRESHOLD=80` in the script
 - Uses `--login-options "AUTH=LOGIN"` for curl SMTP — OVH advertises GSSAPI first, which fails without Kerberos
 
+### Nginx Reload for Cert Renewal (cron)
+
+A daily cron job reloads nginx so it picks up renewed Let's Encrypt certificates:
+
+```
+0 4 * * * docker compose -f /home/speckle-user/git/speckle-server/docker-compose-speckle.yml exec -T speckle-ingress nginx -s reload >> /var/log/nginx-reload.log 2>&1
+```
+
+- Runs every day at 4am (after certbot's 12-hour renewal cycle has had time to act)
+- Nginx reload is graceful — no dropped connections, no downtime
+- Reloads unconditionally; this is cheap and avoids needing to inspect cert mtimes
+- Output logged to `/var/log/nginx-reload.log` (file must be owned by `speckle-user`)
+- View/edit with `crontab -e` (as `speckle-user`)
+
+Without this, renewed certs sit on disk but nginx keeps serving the old (in-memory) cert until the next manual reload or container restart.
+
 ### Docker Log Rotation
 
 Container logs are capped by `/etc/docker/daemon.json`:
