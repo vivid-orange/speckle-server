@@ -93,7 +93,7 @@
     "@graphql-codegen/plugin-helpers": "^5.1.0",
     "@graphql-codegen/typescript": "^4.1.5",
     "@graphql-codegen/visitor-plugin-common": "^5.7.1",
-    "@nuxt/devtools": "^1.7.0",
+    "@nuxt/devtools": "^2.0.0",
     "@nuxt/eslint": "^1.1.0",
     "@nuxt/image": "^1.8.1",
     "@nuxtjs/tailwindcss": "^6.12.2",
