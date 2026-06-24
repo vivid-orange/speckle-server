@@ -320,10 +320,27 @@ chmod +x utils/docker-compose-ingress/init-letsencrypt.sh
 
 **Certificate Renewal:**
 - Certbot container checks for renewal every 12 hours automatically
+- Renewals use **webroot** authentication: nginx serves the ACME challenge from `/var/www/certbot` (shared volume) on port 80, so certbot does not need to bind port 80 itself. The renewal config in `/etc/letsencrypt/renewal/<domain>.conf` must have `authenticator = webroot` — this is set by `init-letsencrypt.sh` step 6
 - After renewal, reload nginx to use the new certificate:
   ```bash
   docker compose -f docker-compose-speckle.yml exec speckle-ingress nginx -s reload
   ```
+
+**Troubleshooting renewal failures:**
+
+If `docker compose -f docker-compose-speckle.yml logs certbot` shows `404` errors fetching `/.well-known/acme-challenge/...`, the renewal config is likely set to standalone instead of webroot (certbot tries to bind port 80, nginx already has it, so Let's Encrypt hits nginx's 404). Verify:
+```bash
+docker compose -f docker-compose-speckle.yml exec certbot \
+  grep authenticator /etc/letsencrypt/renewal/*.conf
+# Should print: authenticator = webroot
+```
+Fix by re-issuing via webroot (this updates the renewal config in place):
+```bash
+docker compose -f docker-compose-speckle.yml exec certbot certbot certonly \
+  --webroot --webroot-path /var/www/certbot --non-interactive --agree-tos \
+  --email t.reinhardt@whitbywood.com -d speckle.whitbywood.com
+docker compose -f docker-compose-speckle.yml exec speckle-ingress nginx -s reload
+```
 
 **Check Certificate Status:**
 ```bash
@@ -485,6 +502,22 @@ A weekly cron job runs as `speckle-user` to prune dangling Docker images (old bu
 - Output logged to `/var/log/check-disk.log` (file must be owned by `speckle-user`)
 - Threshold can be changed by editing `THRESHOLD=80` in the script
 - Uses `--login-options "AUTH=LOGIN"` for curl SMTP — OVH advertises GSSAPI first, which fails without Kerberos
+
+### Nginx Reload for Cert Renewal (cron)
+
+A daily cron job reloads nginx so it picks up renewed Let's Encrypt certificates:
+
+```
+0 4 * * * docker compose -f /home/speckle-user/git/speckle-server/docker-compose-speckle.yml exec -T speckle-ingress nginx -s reload >> /var/log/nginx-reload.log 2>&1
+```
+
+- Runs every day at 4am (after certbot's 12-hour renewal cycle has had time to act)
+- Nginx reload is graceful — no dropped connections, no downtime
+- Reloads unconditionally; this is cheap and avoids needing to inspect cert mtimes
+- Output logged to `/var/log/nginx-reload.log` (file must be owned by `speckle-user`)
+- View/edit with `crontab -e` (as `speckle-user`)
+
+Without this, renewed certs sit on disk but nginx keeps serving the old (in-memory) cert until the next manual reload or container restart.
 
 ### Docker Log Rotation
 
