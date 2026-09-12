@@ -45,7 +45,7 @@
     "type-fest": "^3.11.1"
   },
   "peerDependencies": {
-    "@tiptap/core": "^2.0.0-beta.176",
+    "@tiptap/core": "^3.0.0",
     "bull": "*",
     "knex": "*",
     "mixpanel": "^0.17.0",
@@ -57,7 +57,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@tiptap/core": "^2.0.0-beta.176",
+    "@tiptap/core": "^3.0.0",
     "@types/lodash": "^4.14.184",
     "@types/lodash-es": "^4.17.12",
     "@types/ua-parser-js": "^0.7.39",
