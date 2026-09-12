@@ -9697,7 +9697,7 @@ __metadata:
     "@tailwindcss/line-clamp": "npm:^0.4.2"
     "@tailwindcss/typography": "npm:^0.5.12"
     "@testing-library/vue": "npm:^6.6.1"
-    "@tiptap/core": "npm:2.10.3"
+    "@tiptap/core": "npm:3.30.4"
     "@tiptap/extension-bold": "npm:2.10.3"
     "@tiptap/extension-document": "npm:2.10.3"
     "@tiptap/extension-hard-break": "npm:2.10.3"
@@ -9995,7 +9995,7 @@ __metadata:
     "@parcel/watcher": "npm:^2.5.1"
     "@speckle/objectloader": "workspace:^"
     "@speckle/shared": "workspace:^"
-    "@tiptap/core": "npm:^2.0.0-beta.176"
+    "@tiptap/core": "npm:^3.0.0"
     "@types/bcrypt": "npm:^5.0.0"
     "@types/bull": "npm:^3.15.9"
     "@types/busboy": "npm:^1.5.4"
@@ -10176,7 +10176,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@speckle/shared@workspace:packages/shared"
   dependencies:
-    "@tiptap/core": "npm:^2.0.0-beta.176"
+    "@tiptap/core": "npm:^3.0.0"
     "@types/lodash": "npm:^4.14.184"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/ua-parser-js": "npm:^0.7.39"
@@ -10205,7 +10205,7 @@ __metadata:
     znv: "npm:^0.4.0"
     zod: "npm:^3.22.4"
   peerDependencies:
-    "@tiptap/core": ^2.0.0-beta.176
+    "@tiptap/core": ^3.0.0
     bull: "*"
     knex: "*"
     mixpanel: ^0.17.0
@@ -11702,12 +11702,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/core@npm:2.10.3, @tiptap/core@npm:^2.0.0-beta.176":
-  version: 2.10.3
-  resolution: "@tiptap/core@npm:2.10.3"
+"@tiptap/core@npm:3.30.4":
+  version: 3.30.4
+  resolution: "@tiptap/core@npm:3.30.4"
   peerDependencies:
-    "@tiptap/pm": ^2.7.0
-  checksum: 10/0a9f81046885b26180da293d9281cd4bbfb45d1e80539aaea279082fccb93b712e852aba1d2baebba777582acc1cf9e747e3b383715d44499a0c627fb8c40236
+    "@tiptap/pm": 3.30.4
+  checksum: 10/78a2cfe15276d3246fbde94113cccf53e6dfd305f276562728bd7aed19b792d132a19d30ada0bf0ce502639f6c2e50eff0230fad83d40636e957d1ada7b7d0d3
+  languageName: node
+  linkType: hard
+
+"@tiptap/core@npm:^3.0.0":
+  version: 3.31.3
+  resolution: "@tiptap/core@npm:3.31.3"
+  peerDependencies:
+    "@tiptap/pm": 3.31.3
+  checksum: 10/b55d8b7e077ab8b126dc0f657faba9359ee2f84798502009037b6f199cba8327cded13b5bf4b96c5faeb028c9721a50492c17ecc974e992b3a43e1d19a7439f4
   languageName: node
   linkType: hard
 
