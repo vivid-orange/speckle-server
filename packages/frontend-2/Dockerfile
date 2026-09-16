@@ -1,6 +1,6 @@
 ARG NODE_ENV=production
 
-FROM node:22-bookworm-slim@sha256:221ee67425de7a3c11ce4e81e63e50caaec82ede3a7d34599ab20e59d29a0cb5 AS build-stage
+FROM node:22-bookworm-slim@sha256:d415caac2f1f77b98caaf9415c5f807e14bc8d7bdea62561ea2fef4fbd08a73c AS build-stage
 
 WORKDIR /speckle-server
 
@@ -10,7 +10,7 @@ RUN apt-get update -y \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y \
   --no-install-recommends \
   ca-certificates=20230311+deb12u1 \
-  curl=7.88.1-10+deb12u14 \
+  curl=7.88.1-10+deb12u15 \
   && curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini -o /usr/bin/tini \
   && chmod +x /usr/bin/tini \
   && apt-get remove -y curl \
@@ -63,7 +63,7 @@ ENV HYDRATION_MISMATCH_REPORTING=false
 # hadolint ignore=DL3059
 RUN yarn workspaces foreach --include "packages/frontend-2" -Wt run build
 
-FROM gcr.io/distroless/nodejs22-debian12:nonroot@sha256:ed26b3ab750110c51d9dbdfd6c697561dc40a01c296460c3494d47b550ef4126 AS production-stage
+FROM gcr.io/distroless/nodejs22-debian12:nonroot@sha256:13593b7570658e8477de39e2f4a1dd25db2f836d68a0ba771251572d23bb4f8e AS production-stage
 ENV PORT=8080
 
 ENV NUXT_PUBLIC_MIXPANEL_TOKEN_ID=acd87c5a50b56df91a795e999812a3a4

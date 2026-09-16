@@ -86,7 +86,7 @@ services:
   # The mounted volumes (for the node_module CPU architecture build hack) are owned by 'root' by default
   # This container will chown these node_modules volumes to the 'node' user
   init:
-    image: debian:bookworm-slim
+    image: debian:bookworm-slim@sha256:f9c6a2fd2ddbc23e336b6257a5245e31f996953ef06cd13a59fa0a1df2d5c252
     restart: 'no'
     entrypoint: |
       /bin/bash -c "groupadd --gid 1000 node && useradd --uid 1000 --gid node --shell /bin/bash --create-home node && find . -type d -name 'node_modules' | grep '\/node_modules$' | xargs chown node:node {}"
