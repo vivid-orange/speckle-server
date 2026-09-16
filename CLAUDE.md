@@ -104,6 +104,25 @@ This removes the need to manually run `scripts/bulk-add-collaborators-db.sh` aft
 
 Implementation: `packages/server/modules/core/events/autoCollaborator.ts`, registered in `packages/server/modules/core/index.ts`.
 
+##### Auto Owner (`AUTO_OWNER_EMAIL`)
+
+Optional companion setting, read only when `FF_AUTO_COLLABORATOR_ENABLED` is on. Set it to the email of one account that should hold `stream:owner` on **every** project:
+
+```bash
+AUTO_OWNER_EMAIL=d.veld@whitbywood.com
+```
+
+- **New project** → the account is granted `stream:owner`, upserted *after* the contributor sweep so it overrides the `stream:contributor` row that sweep inserts.
+- **That account is (re-)created** → it is granted `stream:owner` on all existing projects, so an SSO re-provision does not silently demote it to contributor.
+
+The account is resolved by email (case-insensitive) inside the SQL statement, so an unset value, a typo, or a deleted account is a logged no-op rather than a startup failure. Leaving it unset preserves the previous contributor-only behaviour exactly. This does not remove the project creator's own `stream:owner` — projects simply end up with two owners.
+
+The listeners only fire on creation events, so after setting this for the first time run the one-time backfill for projects that already exist:
+
+```bash
+./scripts/backfill-auto-owner.sh
+```
+
 ## Key Development Patterns
 
 ### TypeScript

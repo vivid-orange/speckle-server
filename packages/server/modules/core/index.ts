@@ -49,9 +49,11 @@ import { projectListenersFactory } from '@/modules/core/events/projectListeners'
 import {
   autoCollaboratorListenersFactory,
   grantContributorToAllProjectsFactory,
-  grantAllUsersContributorFactory
+  grantAllUsersContributorFactory,
+  grantAutoOwnerOnProjectFactory,
+  grantOwnerOnAllProjectsFactory
 } from '@/modules/core/events/autoCollaborator'
-import { getFeatureFlags } from '@/modules/shared/helpers/envHelper'
+import { getAutoOwnerEmail, getFeatureFlags } from '@/modules/shared/helpers/envHelper'
 
 let stopTestSubs: (() => void) | undefined = undefined
 let stopAutoCollaborator: (() => void) | undefined = undefined
@@ -140,6 +142,9 @@ const coreModule: SpeckleModule<{
           eventBus: getEventBus(),
           grantContributorToAllProjects: grantContributorToAllProjectsFactory({ db }),
           grantAllUsersContributor: grantAllUsersContributorFactory({ db }),
+          grantAutoOwnerOnProject: grantAutoOwnerOnProjectFactory({ db }),
+          grantOwnerOnAllProjects: grantOwnerOnAllProjectsFactory({ db }),
+          autoOwnerEmail: getAutoOwnerEmail(),
           logger: coreLogger
         })()
       }

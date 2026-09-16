@@ -23,6 +23,14 @@ export function getStringFromEnv(
   return envVar
 }
 
+/**
+ * Email of the account that should automatically be granted `stream:owner` on every
+ * project when FF_AUTO_COLLABORATOR_ENABLED is on. Unset/empty disables the behaviour.
+ */
+export function getAutoOwnerEmail(): string | null {
+  return getStringFromEnv('AUTO_OWNER_EMAIL', { unsafe: true }).trim() || null
+}
+
 export function getIntFromEnv(envVarKey: string, aDefault = '0'): number {
   return parseInt(process.env[envVarKey] || aDefault)
 }
