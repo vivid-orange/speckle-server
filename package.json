@@ -67,7 +67,7 @@
     "prettier": "^2.5.1",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.0.0",
-    "vitest": "^3.0.7",
+    "vitest": "^4.0.0",
     "zx": "^8.1.2"
   },
   "resolutions": {
@@ -94,7 +94,7 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0",
     "wait-on": ">=7.2.0",
-    "vitest": "^3.0.7",
+    "vitest": "^4.0.0",
     "@types/node": "22.16.2",
     "bull-board/express": "^4.20.0",
     "express/path-to-regexp": "^0.1.12"
