@@ -76,6 +76,7 @@
     "@bull-board/express/express": "^4.20.0",
     "@microsoft/api-extractor/semver": "^7.5.4",
     "@rushstack/node-core-library/semver": "^7.5.4",
+    "ipx/sharp": "^0.35.5",
     "@typescript-eslint/eslint-plugin": "^8.20.0",
     "@typescript-eslint/parser": "^8.20.0",
     "@types/react": "file:./packages/frontend-2/type-augmentations/stubs/types__react",

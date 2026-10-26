@@ -1,7 +1,7 @@
 ARG NODE_ENV=production
 
 # NOTE: Docker context should be set to git root directory, to include the viewer
-FROM node:22-bookworm-slim@sha256:d415caac2f1f77b98caaf9415c5f807e14bc8d7bdea62561ea2fef4fbd08a73c AS build-stage
+FROM node:22-bookworm-slim@sha256:de170b39439eb0e5a3444ad7d60b015614a381e10fecae2e30ec9e735122f38d AS build-stage
 
 # Consume the ARG from the global scope
 ARG NODE_ENV
@@ -35,7 +35,7 @@ RUN yarn workspaces foreach -Wt run build
 
 # google-chrome-stable is only available for amd64 so we have to fix the platform
 # hadolint ignore=DL3029
-FROM --platform=linux/amd64 node:22-bookworm-slim@sha256:d415caac2f1f77b98caaf9415c5f807e14bc8d7bdea62561ea2fef4fbd08a73c AS node
+FROM --platform=linux/amd64 node:22-bookworm-slim@sha256:de170b39439eb0e5a3444ad7d60b015614a381e10fecae2e30ec9e735122f38d AS node
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Install tini, and fonts
@@ -43,7 +43,7 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
     --no-install-recommends \
     # up to date ca-certs are required for downloading the google signing key
-    ca-certificates=20230311+deb12u1 \
+    ca-certificates=20250419~deb12u2 \
     tini=0.19.0-1+b3 \
     fonts-ipafont-gothic=00303-23 \
     fonts-wqy-zenhei=0.9.45-8 \

@@ -203,7 +203,7 @@ services:
       # - postgres
 
   certbot:
-    image: certbot/certbot:v5.5.0@sha256:78a7eaa40af657301e25731297b6e73646c695370d17e9bb03189fa82966d65c
+    image: certbot/certbot:v5.8.0@sha256:f70ad0adbb7e117f0fe42a63c553f28ea451edabc0148757b6efcd9735acaa20
     restart: always
     logging: *default-logging
     volumes:

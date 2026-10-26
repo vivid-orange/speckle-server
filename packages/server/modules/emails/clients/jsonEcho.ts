@@ -41,11 +41,12 @@ export async function initializeJSONEchoTransporter(deps: {
 export const mapJsonResponseToSentEmailDeliveryStatus = (
   response: SentMessageInfo
 ): SentEmailDeliveryStatus => {
-  if (response.rejected.length > 0) {
+  // jsonTransport does not populate accepted/rejected
+  if ((response.rejected?.length ?? 0) > 0) {
     return SentEmailDeliveryStatus.FAILED
   }
 
-  if (response.accepted.length === 0) {
+  if ((response.accepted?.length ?? 0) === 0) {
     return SentEmailDeliveryStatus.PENDING
   }
 

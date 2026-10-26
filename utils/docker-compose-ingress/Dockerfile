@@ -1,4 +1,4 @@
-FROM nginx:1.29-bookworm@sha256:8adbdcb969e2676478ee2c7ad333956f0c8e0e4c5a7463f4611d7a2e7a7ff5dc
+FROM nginx:1.30-trixie@sha256:a7675fcee220f59b4a99f7098c06a0d5d999c2c0ee37c0211efb780536e5cb20
 ENV FILE_SIZE_LIMIT_MB=100
 ENV DOMAIN=localhost
 

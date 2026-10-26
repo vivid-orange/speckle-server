@@ -368,6 +368,20 @@ export async function init() {
   const graphqlServer = await buildApolloServer({
     subscriptionServer
   })
+  // Backport of the @apollo/server 5.5.0 fix for GHSA-9q82-xgwf-vj6h: a browser bug lets
+  // GET requests with a non-JSON content type slip past csrfPrevention, and we accept cookie auth
+  app.use(GRAPHQL_PATH, (req, res, next) => {
+    const contentType = req.headers['content-type']
+    if (
+      req.method === 'GET' &&
+      contentType &&
+      contentType.split(';')[0].trim().toLowerCase() !== 'application/json'
+    ) {
+      res.status(400).send('GET requests must not specify a non-JSON Content-Type')
+      return
+    }
+    next()
+  })
   app.use(
     GRAPHQL_PATH,
     expressMiddleware(graphqlServer, {
