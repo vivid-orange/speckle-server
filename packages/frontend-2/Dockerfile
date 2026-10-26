@@ -47,7 +47,7 @@ COPY packages/ui-components-nuxt ./packages/ui-components-nuxt/
 COPY packages/tailwind-theme ./packages/tailwind-theme/
 
 # hadolint ignore=DL3059
-RUN yarn workspaces foreach --exclude "@speckle/frontend-2" -W run build
+RUN yarn workspaces foreach --exclude "@speckle/frontend-2" -Wt run build
 
 COPY packages/frontend-2/type-augmentations ./packages/frontend-2
 COPY packages/frontend-2 ./packages/frontend-2/
@@ -61,7 +61,7 @@ ENV SPECKLE_SERVER_VERSION=${SPECKLE_SERVER_VERSION}
 # for better hydration mismatch errors in prod (larger bundle size tho)
 ENV HYDRATION_MISMATCH_REPORTING=false
 # hadolint ignore=DL3059
-RUN yarn workspaces foreach --include "packages/frontend-2" -W run build
+RUN yarn workspaces foreach --include "packages/frontend-2" -Wt run build
 
 FROM gcr.io/distroless/nodejs22-debian12:nonroot@sha256:13593b7570658e8477de39e2f4a1dd25db2f836d68a0ba771251572d23bb4f8e AS production-stage
 ENV PORT=8080

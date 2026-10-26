@@ -34,7 +34,7 @@ RUN PUPPETEER_SKIP_DOWNLOAD=true PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 yarn workspa
 COPY packages/shared ./packages/shared/
 COPY packages/webhook-service/src ./packages/webhook-service/
 
-RUN yarn workspaces foreach -W run build
+RUN yarn workspaces foreach -Wt run build
 
 FROM node:22-bookworm-slim@sha256:d415caac2f1f77b98caaf9415c5f807e14bc8d7bdea62561ea2fef4fbd08a73c AS dependency-stage
 # yarn install
