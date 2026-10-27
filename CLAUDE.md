@@ -522,6 +522,31 @@ A weekly cron job runs as `speckle-user` to prune dangling Docker images (old bu
 - Threshold can be changed by editing `THRESHOLD=80` in the script
 - Uses `--login-options "AUTH=LOGIN"` for curl SMTP — OVH advertises GSSAPI first, which fails without Kerberos
 
+### Nightly Backups (cron)
+
+`scripts/backup.sh` backs up Postgres and MinIO every night at 2:30am:
+
+```
+30 2 * * * /home/speckle-user/git/speckle-server/scripts/backup.sh >> /var/log/speckle-backup.log 2>&1
+```
+
+- Each run writes `/home/speckle-user/backups/<YYYY-MM-DD_HHMM>/` containing `globals.sql.zst` (roles), `speckle.dump` (`pg_dump -Fc -Z zstd`, ~1GB) and `minio/` (copy of the MinIO volume)
+- MinIO snapshots use `rsync --link-dest`, so unchanged files are hard-linked and each snapshot only costs new uploads
+- Keeps the 3 newest snapshots plus the 2 newest Sunday ones (`KEEP_DAILY` / `KEEP_WEEKLY`); about 6–7GB in steady state
+- Integrity: each dump is checked with `pg_restore --list` before the snapshot is finalized; a failure removes the partial snapshot and emails `t.reinhardt@whitbywood.com`
+- Takes ~3 minutes; uses `sudo` for reading the MinIO volume and pruning (snapshot `minio/` dirs are root-owned)
+- **Off-site:** if `scripts/backup-offsite.sh` exists and is executable, it is called with the snapshot path after each successful run. Until it exists, backups live only on this server's disk.
+
+Restore:
+```bash
+# Database (into an empty database; stop speckle-server first)
+zstd -dc <snapshot>/globals.sql.zst | docker compose -f docker-compose-deps.yml exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d postgres'
+docker compose -f docker-compose-deps.yml exec -T postgres sh -c 'pg_restore -U "$POSTGRES_USER" -d speckle --clean --if-exists' < <snapshot>/speckle.dump
+
+# MinIO (stop minio first)
+sudo rsync -a --delete <snapshot>/minio/ "$(docker volume inspect -f '{{.Mountpoint}}' speckle-server_minio-data)/"
+```
+
 ### Nginx Reload for Cert Renewal (cron)
 
 A daily cron job reloads nginx so it picks up renewed Let's Encrypt certificates:

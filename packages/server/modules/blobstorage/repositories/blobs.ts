@@ -17,6 +17,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   HeadBucketCommand,
+  HeadObjectCommand,
   S3ServiceException
 } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
@@ -35,7 +36,11 @@ const sendCommand = async <CommandOutput extends ServiceOutputTypes>(
     const ret = await client.send(command)
     return ret
   } catch (err) {
-    if (err instanceof S3ServiceException && get(err, 'Code') === 'NoSuchKey')
+    // HEAD responses have no body, so a missing key surfaces as 'NotFound' rather than 'NoSuchKey'
+    if (
+      err instanceof S3ServiceException &&
+      (get(err, 'Code') === 'NoSuchKey' || err.name === 'NotFound')
+    )
       throw new NotFoundError(err.message)
     throw err
   }
@@ -58,8 +63,9 @@ export const getObjectAttributesFactory =
   (deps: { storage: ObjectStorage }): GetObjectAttributes =>
   async ({ objectKey }) => {
     const { storage } = deps
+    // HEAD, not GET: an undrained GET body pins a pooled socket until it times out (upstream #5771)
     const data = await sendCommand(
-      new GetObjectCommand({ Bucket: storage.bucket, Key: objectKey }),
+      new HeadObjectCommand({ Bucket: storage.bucket, Key: objectKey }),
       storage
     )
 

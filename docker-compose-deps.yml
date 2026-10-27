@@ -193,7 +193,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 1G # 256M made grafana 13.2 thrash (re-reading plugin binaries, TBs of disk IO)
     environment:
       GF_SECURITY_ADMIN_USER: '${GRAFANA_ADMIN_USER}'
       GF_SECURITY_ADMIN_PASSWORD: '${GRAFANA_ADMIN_PASSWORD}'
