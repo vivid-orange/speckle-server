@@ -130,7 +130,18 @@ export default defineNuxtConfig({
       // i've no idea why, but the same version of various deps gets bundled twice
       // in the case of vee-validate, this is just a guess, but maybe it gets confused cause there's a vee-validate install both under ui-components
       // and also under frontend-2. they're the same version, but apparently that's not enough...
-      dedupe: ['prosemirror-state', '@tiptap/pm', 'prosemirror-model', 'vee-validate']
+      // pino, mixpanel, lodash-es: vite 8 emits SSR externals as absolute paths, and when that's
+      // the root copy (via @speckle/shared) nitro resolves frontend-2's own copy instead, decides
+      // it's not the package entry and half-inlines it, leaving imports that break at runtime
+      dedupe: [
+        'prosemirror-state',
+        '@tiptap/pm',
+        'prosemirror-model',
+        'vee-validate',
+        'pino',
+        'mixpanel',
+        'lodash-es'
+      ]
     },
     server: {
       fs: {
