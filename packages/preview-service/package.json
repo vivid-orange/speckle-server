@@ -40,7 +40,7 @@
     "prom-client": "^14.0.1",
     "puppeteer": "^23.9.0",
     "znv": "^0.4.0",
-    "zod": "^3.23.8"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@swc/cli": "^0.5.1",
