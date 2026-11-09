@@ -35,7 +35,7 @@ jobs:
     runs-on: blacksmith-4vcpu-ubuntu-2404
     name: Helm chart oci
     container:
-      image: speckle/pre-commit-runner:latest
+      image: speckle/pre-commit-runner:latest@sha256:b986b7c2ba42760c8e70cad9f6f597d9b665ab04ac9598ce6d40eb58486b0d86
     env:
       IMAGE_PREFIX: ${{ inputs.IMAGE_PREFIX }}
       IMAGE_VERSION_TAG: ${{ inputs.IMAGE_VERSION_TAG }}

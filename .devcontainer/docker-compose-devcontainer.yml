@@ -1,6 +1,6 @@
 services:
   devcontainer:
-    image: 'mcr.microsoft.com/devcontainers/typescript-node:1-18-bullseye'
+    image: 'mcr.microsoft.com/devcontainers/typescript-node:1-18-bullseye@sha256:0c5c6270c23a7daa2f0bbfca8c4ab56ae87e6fa0bafa36fbb363e33c33bfb01d'
     volumes:
       - ..:/workspaces:cached # mounts our local directory (git root) to the container in /workspaces directory (with access mode of cached)
 
@@ -86,7 +86,7 @@ services:
   # The mounted volumes (for the node_module CPU architecture build hack) are owned by 'root' by default
   # This container will chown these node_modules volumes to the 'node' user
   init:
-    image: debian:bookworm-slim
+    image: debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc
     restart: 'no'
     entrypoint: |
       /bin/bash -c "groupadd --gid 1000 node && useradd --uid 1000 --gid node --shell /bin/bash --create-home node && find . -type d -name 'node_modules' | grep '\/node_modules$' | xargs chown node:node {}"
