@@ -1,5 +1,5 @@
-FROM python:3.13-slim-bookworm AS build
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+FROM python:3.13-slim-bookworm@sha256:a5a7017efc5969e00ae2b91c8eb0631049a569652aa4ffc4501769049ae45c72 AS build
+COPY --from=ghcr.io/astral-sh/uv:latest@sha256:96f40d3904aad8d0bd010539001d36c8e2188b981e1334471a90c4a1d93bb490 /uv /uvx /bin/
 
 
 # - Silence uv complaining about not being able to use hard links,
@@ -28,7 +28,7 @@ RUN --mount=type=cache,target=/root/.cache \
     --no-dev \
     --no-editable
 
-FROM python:3.13-slim-bookworm
+FROM python:3.13-slim-bookworm@sha256:a5a7017efc5969e00ae2b91c8eb0631049a569652aa4ffc4501769049ae45c72
 
 #
 # Optional: add the application virtualenv to search path.
