@@ -50,7 +50,7 @@
     "@types/pngjs": "^6.0.5",
     "eslint": "^9.4.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-vitest": "^0.5.4",
+    "@vitest/eslint-plugin": "^1.0.1",
     "pixelmatch": "^7.1.0",
     "pngjs": "^7.0.0",
     "prettier": "^2.5.1",
