@@ -5,7 +5,7 @@ WORKDIR /app
 COPY packages/fileimport-service/src/ifc-dotnet .
 RUN dotnet publish ifc-converter.csproj -c Release -o output/
 
-FROM mcr.microsoft.com/dotnet/runtime:8.0-noble AS runtime
+FROM mcr.microsoft.com/dotnet/runtime:8.0-noble@sha256:7f28847670838ca16b8d8e228cfacd023fe74b279927d3cd01c640ce1b453283 AS runtime
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR /speckle-server
